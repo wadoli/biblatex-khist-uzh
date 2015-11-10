@@ -56,12 +56,39 @@
 
 % https://tex.stackexchange.com/questions/11827/adding-an-authoryear-block-at-the-beginning-of-bibliography-entries
 \renewbibmacro*{begentry}{%
+%%  \global\boolfalse{cbx:loccit}%
+%  \ifnameundef{labelname}
+%    {\iffieldundef{shorthand}
+%       {\usebibmacro{cite:label}%
+%        \setunit{%
+%          \global\booltrue{cbx:parens}%
+%          \addspace\bibopenparen}%
+%%        \ifnumequal{\value{citecount}}{1}
+%%          {\usebibmacro{prenote}}
+%%          {}%
+%        \usebibmacro{cite:labelyear+extrayear}}
+%       {\usebibmacro{cite:shorthand}}}
+%%    {\printnames{labelname}%
+%%     \setunit{%
+%%       \global\booltrue{cbx:parens}%
+%%       \addspace\bibopenparen}%
+%%     \ifnumequal{\value{citecount}}{1}
+%%       {\usebibmacro{prenote}}
+%%       {}%
+%%     \iffieldundef{shorthand}
+%%       {\ifthenelse{\ifciteibid\AND\NOT\iffirstonpage}
+%%          {\usebibmacro{cite:ibid}}
+%%          {\iffieldundef{labelyear}
+%%             {\usebibmacro{cite:label}}
+%%             {\usebibmacro{cite:labelyear+extrayear}}}}
+%%       {\usebibmacro{cite:shorthand}}}
+
   \printtext{%
     \begingroup
     \defcounter{maxnames}{1}%
-    \printnames{labelname}%
-    \setunit{\nameyeardelim}%
-    \usebibmacro{cite:labelyear+extrayear}%
+%    \printnames{labelname}%
+%    \setunit{\nameyeardelim}%
+  \printtext[bibhyperref]{\printfield{shorttitle}}%\usebibmacro{cite:shorthand}%\usebibmacro{cite:labelyear+extrayear}%
     \endgroup
     }%
   \addcolon\addspace%oder \quad
@@ -78,5 +105,142 @@
 %\DeclareNameAlias{author}{sortname}
 %\DeclareNameAlias{editor}{sortname}
 %\DeclareNameAlias{translator}{sortname}
+
+%%%%%%      LETTER      %%%%%%
+% from biblatex-historian, historian.bbx, 2010/08/22 v0.4 historian bibliography style
+
+% ---- variables and stuff for letter
+%Certain entrytypes and subtypes need to be omitted or listed separately from the main bibliography. Set up categories for them
+\DeclareBibliographyCategory{noteonly}
+
+\DefineBibliographyStrings{ngerman}{%
+	bycorporate		        = {by the},
+	bytranslator     		= {trans.\isdot},
+	bytranslatorbib     	= {translated by},
+	translatedas     		= {trans.\isdot as},
+	translatedasbib     	= {translated as},
+%	as						= {as},
+	forthcoming				= {forthcoming},
+	incapitalized			= {In},
+  	introto     			= {to},
+	letterto     			= {an},%to},
+	excerptfrom     		= {from},
+	volumeof    			= {of},
+	byline      			= {by},
+	online       			= {},%{available online from},
+	postedonline         	= {posted},
+	nodate					= {n.\isdot d.\isdot},
+	noplace					= {n.\isdot p.\isdot},
+	nopublisher				= {n.\isdot p.\isdot},
+	origedition				= {orig. ed.\isdot}, 
+	origeditiontitled		= {orig. ed.\isdot},
+	origeditionbib			= {original edition},
+	origeditiontitledbib	= {original edition},
+	translatedfromtitle		= {originally},
+	translatedfromtitlebib	= {originally published as},
+	pseudonym				= {pseud.\isdot},
+	numbers					= {nos\adddot},
+	namedash				= {---------}
+}%
+
+% Date routine, with pubstate and year as fallbacks
+\newbibmacro*{date-full}{%---------------------------------------------------------------
+	\ifthenelse{\iffieldundef{year}\and\iffieldundef{month}\and\iffieldundef{day}}
+		{%then no date; try pubstate
+			\iffieldundef{pubstate}%
+				{%then nothing available: insert `n.d.'
+					\bibstring{nodate}}%
+				{%else'substitute pubstate for date
+					\printfield{pubstate}}%
+			}%end then
+		{%else use the standard date routine
+			\usebibmacro{date}%
+			}%endif
+	}%end macro date	
+	
+
+%For correspondence (archival or published) 
+\DeclareBibliographyDriver{letter}{%
+%Add key to noteonly category
+\addtocategory{noteonly}{\thefield{entrykey}}%
+\usebibmacro{bibindex}%
+\usebibmacro{begentry}%
+\usebibmacro{author}%
+%Just in case, format for bibliography, too
+\iffootnote
+	{\relax}%
+	{\ifcitation
+		{\relax}%
+		{\setunit{\labelnamepunct}\newblock
+		\printnames[byauthor]{author}}}%Repeat name in bibliography
+%If there's a recipient in namec, print ``to namec''
+\setunit{\addspace\bibstring{letterto}\addspace}%
+\printnames{editora}%(Zotero Better Bib(La)TeX verwendet editora) namec}%
+\setunit{\addcomma\addspace}%
+\usebibmacro{title}%Shouldn't be needed for letters, except maybe if names are missing or uncertain
+\setunit{\addcomma\addspace}%
+\printfield{type}%
+\setunit{\addcomma\addspace}%
+\printfield{venue}%
+\setunit{\addcomma\addspace}%
+\printfield{note}%
+\setunit{\addcomma\addspace}%
+\usebibmacro{date-full}%
+\newunit\newblock
+\iffieldundef{xref}%
+	{%then no xref; just print what's likely to be available in the customd
+		\iffieldundef{booktitle}
+			{%then improvise
+				\printfield{howpublished}%
+				\setunit*{\addcomma\addspace}%
+				\printlist{organization}%
+				\setunit*{\addcomma\addspace}%
+				\printlist{institution}%
+				\setunit*{\addcomma\addspace}%
+				\printfield{library}%
+				\setunit*{\addcomma\addspace}%
+				\printfield{userd}%
+				\newunit\newblock
+				\usebibmacro{volume+pages}%
+				}%
+			{%else assume it's from a published collection
+				\usebibmacro{in:}%
+				\usebibmacro{getbookinfo}%
+				}% 
+		\newunit\newblock
+		\usebibmacro{onlinelocation}%
+		}%
+	{%else x-ref to collection or customa and the getbookinfo macro
+	%(but only print `in' if the xref turns out to be to a collection)
+		%Save data for after the xref
+		\printtext{\unspace}%Just to force the unit punctutation before the xref
+		\savename{author}{\childauthor}%
+		\savefield{pages}{\childpages}%
+		\savefield{volume}{\childvolume}%
+		\savefield{part}{\childpart}%
+		\iffootnote%
+			{\cbx@crosstoarch{\thefield{xref}}}%
+			{\bbx@crosstoarch{\thefield{xref}}}%
+%		\restorefield{volume}{\childvolume}%
+%		\restorefield{part}{\childpart}%
+%		\restorefield{pages}{\childpages}%
+	}%endif
+\newunit\newblock
+\printfield{library}%
+\setunit{\addcomma\addspace}%
+\printfield{userd}%
+\newunit\newblock
+\iffootnote
+	{\usebibmacro{volume+pages}%
+	\newunit\newblock}%
+	{\relax}%
+\usebibmacro{onlinelocation}%
+\newunit\newblock
+\printfield{addendum}%
+\newunit\newblock
+\usebibmacro{pageref}%
+\usebibmacro{finentry}%
+}%end letter driver
+
 
 \endinput
