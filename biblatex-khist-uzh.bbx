@@ -10,6 +10,7 @@
  isbn=false,
  pagetracker,
  sorting=nyt,
+ mergedate=basic,%will always omit the date specification if the date is a bare year number, see https://tex.stackexchange.com/questions/173020/printing-full-date-in-bibliography-biblatex
  %url=false
 }
 
@@ -88,7 +89,8 @@
     \defcounter{maxnames}{1}%
 %    \printnames{labelname}%
 %    \setunit{\nameyeardelim}%
-  \printtext[bibhyperref]{\printfield{shorttitle}}%\usebibmacro{cite:shorthand}%\usebibmacro{cite:labelyear+extrayear}%
+%  \printtext[bibhyperref]{\printfield{shorthand}}%shorttitle}}%
+  \usebibmacro{cite:shorthand}%\usebibmacro{cite:labelyear+extrayear}%
     \endgroup
     }%
   \addcolon\addspace%oder \quad
@@ -113,7 +115,90 @@
 %Certain entrytypes and subtypes need to be omitted or listed separately from the main bibliography. Set up categories for them
 \DeclareBibliographyCategory{noteonly}
 
-\DefineBibliographyStrings{ngerman}{%
+%%%% CONSTANTS %%%%%%%%%%%%%%%%%
+
+%Define comparison strings for entrysubtypes, authortypes, etc.
+
+%\newcommand\nameaddonpseud{pseudonym}
+%\newcommand\subtypemag{magazine}
+%\newcommand\subtypenewsp{newspaper}
+%\newcommand\subtypeclassic{classic}
+%\newcommand\subtypebiblical{biblical}
+%\newcommand\subtypeearlybook{canon}
+%\newcommand\subtypevideo{video}
+%\newcommand\entrytypearchive{customa}
+%\newcommand\subtypevolume{volume}
+\newcommand\subtypeonline{online}
+%\newcommand\subtypedatabase{database}
+%\newcommand\subtypeblog{blog}
+%\newcommand\subtypelistmessage{listmessage}
+%\newcommand\subtypebooklike{book}
+%\newcommand\subtypepublicdocument{gov}
+%\newcommand\authortypeanon{anonymous}
+%\newcommand\authortypeunsure{anonymous?}
+%\newcommand\authortyperedundant{redundant}
+%\newcommand\authortypealternate{alternate}
+%\newcommand\authortypejournal{journal}
+%\newcommand\subtypeintro{to}
+%\newcommand\subtypeexcerpt{from}
+%\newcommand\subtypenone{none}
+%\newcommand\edtypecorp{corporate}
+%\newcommand\entrytypeper{periodical}
+%\newcommand\entrytypemanual{manual}
+%\newcommand\entrytypecoll{collection}
+%\newcommand\entrytypebook{book}
+%\newcommand\entrytyperef{reference}
+%\newcommand\entrytypeproc{proceedings}
+%\newcommand\entrytypereport{report}
+%\newcommand\entrytypebooklet{booklet}
+%\newcommand\entrytypemisc{misc}
+\newcommand\entrytypeonline{online}
+%\newcommand\entrytypevideo{video}
+%\newcommand\entrytypeaudio{audio}
+%\newcommand\entrytypebookinbook{bookinbook}
+%\newcommand\entrytypearticle{article}
+%\newcommand\entrytypelegislation{legislation}
+%\newcommand\entrytypeletter{letter}
+%\newcommand\entrytypeperformance{performance}
+%\newcommand\optionaddoriginal{addorig}
+%\newcommand\optionnoreprints{none}
+%\newcommand\optionorigfirst{origfirst}
+%\newcommand\optiontransfromorig{transfrom}
+%\newcommand\optionorigtransas{transas}
+%\newcommand\optiondoubledate{doubledate}
+%\newcommand\noplace{np}
+%\newcommand\nopublisher{np}
+
+%%%%%% BIB-STRINGS %%%%%%%%%%%%%%%%
+
+\NewBibliographyString{namedash}
+\NewBibliographyString{letterto}
+\NewBibliographyString{nodate}
+\NewBibliographyString{noplace}
+\NewBibliographyString{nopublisher}
+\NewBibliographyString{online}
+\NewBibliographyString{postedonline}
+\NewBibliographyString{pseudonym}
+\NewBibliographyString{incapitalized}
+\NewBibliographyString{introto}
+\NewBibliographyString{excerptfrom}
+\NewBibliographyString{volumeof}
+\NewBibliographyString{byline}
+\NewBibliographyString{origeditionbib}
+\NewBibliographyString{origeditiontitledbib}
+\NewBibliographyString{origedition}
+\NewBibliographyString{origeditiontitled}
+\NewBibliographyString{translatedfromtitle}
+\NewBibliographyString{translatedfromtitlebib}
+\NewBibliographyString{numbers}
+\NewBibliographyString{bycorporate}
+\NewBibliographyString{bytranslatorbib}
+\NewBibliographyString{translatedas}
+\NewBibliographyString{translatedasbib}
+%\NewBibliographyString{as	}
+\NewBibliographyString{forthcoming}
+
+\DefineBibliographyStrings{german}{%
 	bycorporate		        = {by the},
 	bytranslator     		= {trans.\isdot},
 	bytranslatorbib     	= {translated by},
@@ -143,6 +228,14 @@
 	namedash				= {---------}
 }%
 
+%Used for flagging when volume numbers or maintitles have alread been printed
+\newtoggle{volumeprinted}
+\togglefalse{volumeprinted}
+
+%Set in the .cbx file by the footciteurllast and citerurllast commands
+\newtoggle{urllastflag}
+\togglefalse{urllastflag}
+
 % Date routine, with pubstate and year as fallbacks
 \newbibmacro*{date-full}{%---------------------------------------------------------------
 	\ifthenelse{\iffieldundef{year}\and\iffieldundef{month}\and\iffieldundef{day}}
@@ -156,8 +249,47 @@
 		{%else use the standard date routine
 			\usebibmacro{date}%
 			}%endif
-	}%end macro date	
-	
+	}%end macro date
+
+\newbibmacro*{volume+pages}{%------------------------------------------------------
+\iftoggle{volumeprinted}
+	{\setunit{\addcomma\addspace}}%
+	{\printfield[noformat]{volume}%
+	\printfield{part}%
+	\iffieldundef{volume}
+		{\setunit{\addcomma\addspace}}%
+  		{\setunit{\bibpagespunct}}}%
+\printfield{pages}%
+}%endmacro volume+pages
+
+%-----------------------------------------------------------------------------
+%						ONLINE LOCATORS (all entrytypes)
+%
+%-----------------------------------------------------------------------------
+
+\newbibmacro{onlinelocation}{%-----------------------------------------------
+\iftoggle{urllastflag}
+	{%then special case (from footciteurllast command); postnote comes first
+		\usebibmacro{cite:postnote}}%
+	{%else let cbx do the postnote as usual
+		\relax}%
+\ifthenelse{\equal{\thefield{entrysubtype}}{\subtypeonline}%
+	\OR\equal{\thefield{entrytype}}{\entrytypeonline}}%
+	{%then override the option settings for these entrytypes/subtypes
+		\printfield{doi}%
+		\newunit\newblock%
+		\usebibmacro{eprint}%
+		\newunit\newblock%
+		\iffieldundef{url}%
+			{\relax}%
+			{\usebibmacro{url+urldate}}%
+		}%end then; end override
+	{%else use standard routine for online locators
+		\usebibmacro{doi+eprint+url}%
+	}%end ifthenelse
+}%end macro onlinelocation
+
+% == Actual letter definition
 
 %For correspondence (archival or published) 
 \DeclareBibliographyDriver{letter}{%
@@ -201,7 +333,7 @@
 				\setunit*{\addcomma\addspace}%
 				\printfield{userd}%
 				\newunit\newblock
-				\usebibmacro{volume+pages}%
+				\usebibmacro{volume+pages}% 
 				}%
 			{%else assume it's from a published collection
 				\usebibmacro{in:}%
