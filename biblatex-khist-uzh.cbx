@@ -1,0 +1,19 @@
+% biblatex-khist-uzh.cbx, Oliver Waddell 2015
+% http://www.khist.uzh.ch/studium/master/LeitfadenschriftlicheArbeiten.pdf
+
+\ProvidesFile{biblatex-khist-uzh.cbx}[2015/10/26 v0.1 UZH KHIST citation style]
+\RequireCitationStyle{authoryear-ibid}
+
+\ExecuteBibliographyOptions{
+ autocite=footnote,%Standard: inline,
+ citetracker=context,
+ ibidtracker=constrict,
+ ibidpage=false,
+ labeldate=true,
+ pagetracker=true,
+ uniquename=full,
+ uniquelist=true,
+ sortcites=true
+}
+
+\endinput

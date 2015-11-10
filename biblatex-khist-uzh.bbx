@@ -1,0 +1,82 @@
+% biblatex-khist-uzh.bbx, Oliver Waddell 2015
+
+\ProvidesFile{biblatex-khist-uzh.bbx}[2015/10/26 v0.1 UZH KHIST bibliography style]
+\RequireBibliographyStyle{authoryear-ibid}
+
+\ExecuteBibliographyOptions{
+ dashed=false,
+ doi=false,
+ eprint=false,
+ isbn=false,
+ pagetracker,
+ sorting=nyt,
+ %url=false
+}
+
+\DeclareLanguageMapping{german}{german-apa}
+
+%Suppressing of specific BibTeX fields:
+\AtEveryBibitem{%
+  \clearname{translator}%
+  \clearlist{publisher}%
+  \clearfield{pagetotal}%
+  \clearfield{howpublished}%
+  \clearfield{issn}%
+  \clearfield{lccn}%
+  \clearfield{annote}%
+  \clearfield{language}%
+}
+
+%Formatting of fields (and of citation postnotes):
+% --
+% https://tex.stackexchange.com/questions/12254/biblatex-how-to-remove-the-parentheses-around-the-year-in-authoryear-style
+\usepackage{xpatch}
+\xpatchbibmacro{date+extrayear}{%
+  \printtext[parens]%
+}{%
+%  \setunit{\addperiod\space}%
+  \setunit{\space}%
+  \printtext%
+}{}{}
+% --
+
+\DeclareFieldFormat{citetitle}{#1\isdot} %Titel in Sigel nicht kursiv
+\DeclareFieldFormat[article]{citetitle}{#1} %Titel in Sigel nicht kursiv
+%\DeclareFieldFormat*{title}{#1} %Titel in Literaturverzeichnis nicht kursiv
+%\DeclareFieldFormat*{booktitle}{#1} %Titel in Literaturverzeichnis nicht kursiv
+
+\DefineBibliographyStrings{german}{%
+ urlseen = {aufgerufen am},
+}
+
+\renewcommand*{\multinamedelim}{\addslash} % slash between names
+\renewcommand*{\finalnamedelim}{\addslash} % slash between names
+\renewcommand*{\multilistdelim}{\addslash} % slash between locations
+\renewcommand*{\finallistdelim}{\addslash} % slash between locations
+
+% https://tex.stackexchange.com/questions/11827/adding-an-authoryear-block-at-the-beginning-of-bibliography-entries
+\renewbibmacro*{begentry}{%
+  \printtext{%
+    \begingroup
+    \defcounter{maxnames}{1}%
+    \printnames{labelname}%
+    \setunit{\nameyeardelim}%
+    \usebibmacro{cite:labelyear+extrayear}%
+    \endgroup
+    }%
+  \addcolon\addspace%oder \quad
+}
+
+% Vorname vor Nachname
+
+\DeclareNameAlias{author}{default}
+\DeclareNameAlias{editor}{default}
+\DeclareNameAlias{translator}{default}
+%This is in fact the default setup. You're probably using a style like
+%authoryear/authortitle/verbose which redefines the aliases as follows:
+%
+%\DeclareNameAlias{author}{sortname}
+%\DeclareNameAlias{editor}{sortname}
+%\DeclareNameAlias{translator}{sortname}
+
+\endinput
