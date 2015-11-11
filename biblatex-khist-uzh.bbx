@@ -320,14 +320,14 @@
 \addtocategory{noteonly}{\thefield{entrykey}}%
 \usebibmacro{bibindex}%
 \usebibmacro{begentry}%
-\usebibmacro{author}%
-%Just in case, format for bibliography, too
-\iffootnote
-	{\relax}%
-	{\ifcitation
-		{\relax}%
-		{\setunit{\labelnamepunct}\newblock
-		\printnames[byauthor]{author}}}%Repeat name in bibliography
+%\usebibmacro{author}%
+%%Just in case, format for bibliography, too
+%\iffootnote
+%	{\relax}%
+%	{\ifcitation
+%		{\relax}%
+%		{\setunit{\labelnamepunct}\newblock
+		\printnames[byauthor]{author}%}}%Repeat name in bibliography
 %If there's a recipient in namec, print ``to namec''
 \setunit{\addspace\bibstring{letterto}\addspace}%
 \printnames{editora}%(Zotero Better Bib(La)TeX verwendet editora) namec}%
@@ -344,26 +344,26 @@
 \newunit\newblock
 \iffieldundef{xref}%
 	{%then no xref; just print what's likely to be available in the customd
-		\iffieldundef{booktitle}
-			{%then improvise
-				\printfield{howpublished}%
-				\setunit*{\addcomma\addspace}%
-				\printlist{organization}%
-				\setunit*{\addcomma\addspace}%
-				\printlist{institution}%
-				\setunit*{\addcomma\addspace}%
-				\printfield{library}%
-				\setunit*{\addcomma\addspace}%
-				\printfield{userd}%
-				\newunit\newblock
-				\usebibmacro{volume+pages}% 
-				}%
-			{%else assume it's from a published collection
-				\usebibmacro{in:}%
-				\usebibmacro{getbookinfo}%
-				}% 
-		\newunit\newblock
-		\usebibmacro{onlinelocation}%
+%		\iffieldundef{booktitle}
+%			{%then improvise
+%				\printfield{howpublished}%
+%				\setunit*{\addcomma\addspace}%
+%				\printlist{organization}%
+%				\setunit*{\addcomma\addspace}%
+%				\printlist{institution}%
+%				\setunit*{\addcomma\addspace}%
+%				\printfield{library}%
+%				\setunit*{\addcomma\addspace}%
+%				\printfield{userd}%
+%				\newunit\newblock
+%				\usebibmacro{volume+pages}% 
+%				}%
+%			{%else assume it's from a published collection
+%				\usebibmacro{in:}%
+%				\usebibmacro{getbookinfo}%
+%				}% 
+%		\newunit\newblock
+%		\usebibmacro{onlinelocation}%
 		}%
 	{%else x-ref to collection or customa and the getbookinfo macro
 	%(but only print `in' if the xref turns out to be to a collection)
