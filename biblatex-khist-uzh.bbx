@@ -55,9 +55,38 @@
 \renewcommand*{\multilistdelim}{\addslash} % slash between locations
 \renewcommand*{\finallistdelim}{\addslash} % slash between locations
 
+%\setcounter{mymaxcitenames}{99}
+
 % https://tex.stackexchange.com/questions/11827/adding-an-authoryear-block-at-the-beginning-of-bibliography-entries
+
+\newcounter{mymaxcitenames}
+\AtBeginDocument{%
+  \setcounter{mymaxcitenames}{\value{maxnames}}%
+}
+
 \renewbibmacro*{begentry}{%
-%%  \global\boolfalse{cbx:loccit}%
+  \printtext{%
+    \begingroup
+%    \defcounter{maxnames}{\value{mymaxcitenames}}
+    \iffieldundef{shorthand}
+      {\ifnameundef{labelname}
+         {
+           \usebibmacro{cite:label}
+%           \addspace
+%           \usebibmacro{cite:labelyear+extrayear}
+         }{%
+           \defcounter{maxnames}{\value{mymaxcitenames}}%
+           \printnames{labelname}%
+           \setunit{\nameyeardelim}%
+           \usebibmacro{cite:labelyear+extrayear}%
+         }%
+      }{\usebibmacro{cite:shorthand}}
+    \endgroup
+  }%
+  \addcolon\addspace%oder \quad
+}%
+
+%  \global\boolfalse{cbx:loccit}%
 %  \ifnameundef{labelname}
 %    {\iffieldundef{shorthand}
 %       {\usebibmacro{cite:label}%
@@ -84,17 +113,11 @@
 %%             {\usebibmacro{cite:labelyear+extrayear}}}}
 %%       {\usebibmacro{cite:shorthand}}}
 
-  \printtext{%
-    \begingroup
-    \defcounter{maxnames}{1}%
 %    \printnames{labelname}%
 %    \setunit{\nameyeardelim}%
 %  \printtext[bibhyperref]{\printfield{shorthand}}%shorttitle}}%
-  \usebibmacro{cite:shorthand}%\usebibmacro{cite:labelyear+extrayear}%
-    \endgroup
-    }%
-  \addcolon\addspace%oder \quad
-}
+%  %\usebibmacro{cite:labelyear+extrayear}%
+
 
 % Vorname vor Nachname
 
