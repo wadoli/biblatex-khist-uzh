@@ -1,4 +1,5 @@
 % biblatex-khist-uzh.cbx, Oliver Waddell 2015
+% some changes to authoryear-ibid loosely based on
 % http://www.khist.uzh.ch/studium/master/LeitfadenschriftlicheArbeiten.pdf
 
 \ProvidesFile{biblatex-khist-uzh.cbx}[2015/10/26 v0.1 UZH KHIST citation style]
@@ -15,5 +16,63 @@
  uniquelist=true,
  sortcites=true
 }
+
+%% from historian.cbx, 2010/08/22 v0.4
+%%Modified from verbose-inote.cbx to include special short forms for letters, archives, documents, and some non-print sources
+%\newbibmacro*{footcite:note}{%
+%\ifnameundef{labelname}
+%    {\printfield{label}}%
+%    {\ifthenelse{\equal{\thefield{entrytype}}{performance}}%
+%		{%Titles only
+%			\printfield[title]{labeltitle}}%
+%		{\printnames{labelname}%
+%    		\ifthenelse{\equal{\thefield{entrytype}}{letter}}%
+%    			{\setunit*{\addspace\bibstring{letterto}\addspace}%
+%			\printnames[labelname]{namec}%
+%			\setunit{\addcomma\addspace}%
+%			\usebibmacro{date}}%
+%			{\ifthenelse{\equal{\thefield{entrytype}}{customa}}
+%				{\setunit*{\addspace}%
+%				\printfield[noformat]{nameaddon}}%
+%				{\relax}}}%
+%    }%
+%\ifsingletitle
+%    {\relax}%
+%    {\ifthenelse{\equal{\thefield{entrytype}}{performance}}
+%    		{%Title label already printed
+%			\relax}%
+%		{\setunit*{\nametitledelim}%
+%		\printfield[title]{labeltitle}%
+%		\ifthenelse{\equal{\thefield{entrytype}}{customd}}%
+%			{\setunit*{\addcomma\addspace}%
+%			\printfield[noformat]{titleaddon}%
+%			\setunit*{\addspace}%
+%			\printnames[labelname]{namec}}%
+%		{\relax}%
+%     	}%
+%	}%
+%\iftoggle{noterefsflag}%
+%	{%Then option set for note references
+%		\iftoggle{xrefflag}
+%  			{%Then suppress note function in crossreferences in any case
+%				\relax}%
+%			{%Else print note number
+%				\setunit{\addcomma\space}%
+%				\printtext {%
+%				    \bibstring{seenote}\addnbspace
+%				    \ref{cbx@\csuse{cbx@f@\thefield{entrykey}}}%
+%				    \iftoggle{cbx:pageref}
+%				      {\ifsamepage{\the\value{instcount}}
+%				                  {\csuse{cbx@f@\thefield{entrykey}}}
+%				         {}
+%					 {\addcomma\space\bibstring{page}\addnbspace
+%					  \pageref{cbx@\csuse{cbx@f@\thefield{entrykey}}}}}
+%				      {}}%end printtext
+%      			}%endelse, endiftoggle
+%		}%Endthen
+%    {%Else option set to suppress note references
+%    		\relax}%Endiftoggle
+%}
+
 
 \endinput
