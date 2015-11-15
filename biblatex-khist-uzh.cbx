@@ -19,29 +19,48 @@
 
 % fullcite for entries with the keyword «Quelle» thanks to
 % http://tex.stackexchange.com/a/278355
-\newbibmacro{full:keyw}{%
-  \usedriver
-    {\DeclareNameAlias{sortname}{default}}
-    {\thefield{entrytype}}}
-
-\DeclareCiteCommand{\cite}
-  {\usebibmacro{prenote}}
-  {\usebibmacro{citeindex}%
-   \ifkeyword{Quelle}
-     {\usebibmacro{full:keyw}}
-     {\usebibmacro{cite}}}
-  {\multicitedelim}
-  {\usebibmacro{cite:postnote}}
-
-\DeclareCiteCommand{\footcite}[\mkbibfootnote]
-  {\usebibmacro{prenote}}
-  {\usebibmacro{citeindex}%
-   \ifkeyword{Quelle}
-     {\usebibmacro{full:keyw}}
-     {\usebibmacro{cite}}}
-  {\multicitedelim}
-  {\usebibmacro{cite:postnote}}
-
+% variant 1
+%\newbibmacro{full:keyw}{%
+%  \usedriver
+%    {\DeclareNameAlias{sortname}{default}}
+%    {\thefield{entrytype}}}
+%
+%\DeclareCiteCommand{\cite}
+%  {\usebibmacro{prenote}}
+%  {\usebibmacro{citeindex}%
+%   \ifkeyword{Quelle}
+%     {\usebibmacro{full:keyw}}
+%     {\usebibmacro{cite}}}
+%  {\multicitedelim}
+%  {\usebibmacro{cite:postnote}}
+%
+%\DeclareCiteCommand{\footcite}[\mkbibfootnote]
+%  {\usebibmacro{prenote}}
+%  {\usebibmacro{citeindex}%
+%   \ifkeyword{Quelle}
+%     {\usebibmacro{full:keyw}}
+%     {\usebibmacro{cite}}}
+%  {\multicitedelim}
+%  {\usebibmacro{cite:postnote}}
+%
+% variant 2
+\renewbibmacro*{cite}{%
+  \ifkeyword{Quelle}
+    {\usedriver
+      {\DeclareNameAlias{sortname}{default}}
+      {\thefield{entrytype}}}
+    {\global\boolfalse{cbx:loccit}%
+     \iffieldundef{shorthand}
+       {\ifthenelse{\ifciteibid\AND\NOT\iffirstonpage}
+          {\usebibmacro{cite:ibid}}
+          {\ifthenelse{\ifnameundef{labelname}\OR\iffieldundef{labelyear}}
+             {\usebibmacro{cite:label}%
+              \setunit{\addspace}}
+             {\printnames{labelname}%
+              \setunit{\nameyeardelim}}%
+           \usebibmacro{cite:labelyear+extrayear}}}
+       {\usebibmacro{cite:shorthand}}}}
+       
 %% from historian.cbx, 2010/08/22 v0.4
 %%Modified from verbose-inote.cbx to include special short forms for letters, archives, documents, and some non-print sources
 %\newbibmacro*{footcite:note}{%
