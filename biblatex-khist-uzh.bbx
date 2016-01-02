@@ -59,6 +59,7 @@
 
 %\setcounter{mymaxcitenames}{99}
 
+% bibenvironment withadditionallabel
 % https://tex.stackexchange.com/questions/11827/adding-an-authoryear-block-at-the-beginning-of-bibliography-entries
 
 \newcounter{mymaxcitenames}
@@ -66,59 +67,48 @@
   \setcounter{mymaxcitenames}{\value{maxnames}}%
 }
 
-\renewbibmacro*{begentry}{%
-  \printtext{%
-    \begingroup
-%    \defcounter{maxnames}{\value{mymaxcitenames}}
-    \iffieldundef{shorthand}
-      {\ifnameundef{labelname}
-         {
-           \usebibmacro{cite:label}
-%           \addspace
-%           \usebibmacro{cite:labelyear+extrayear}
-         }{%
-           \defcounter{maxnames}{\value{mymaxcitenames}}%
-           \printnames{labelname}%
-           \setunit{\nameyeardelim}%
-           \usebibmacro{cite:labelyear+extrayear}%
-         }%
-      }{\usebibmacro{cite:shorthand}}
-    \endgroup
-  }%
-  \addcolon\addspace%oder \quad
-}%
+%% default definition from authoryear
+%\defbibenvironment{bibliography}
+%  {\list
+%     {}
+%     {\setlength{\leftmargin}{\bibhang}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\itemsep}{\bibitemsep}%
+%      \setlength{\parsep}{\bibparsep}}}
+%  {\endlist}
+%  {\item}
 
-%  \global\boolfalse{cbx:loccit}%
-%  \ifnameundef{labelname}
-%    {\iffieldundef{shorthand}
-%       {\usebibmacro{cite:label}%
-%        \setunit{%
-%          \global\booltrue{cbx:parens}%
-%          \addspace\bibopenparen}%
-%%        \ifnumequal{\value{citecount}}{1}
-%%          {\usebibmacro{prenote}}
-%%          {}%
-%        \usebibmacro{cite:labelyear+extrayear}}
-%       {\usebibmacro{cite:shorthand}}}
-%%    {\printnames{labelname}%
-%%     \setunit{%
-%%       \global\booltrue{cbx:parens}%
-%%       \addspace\bibopenparen}%
-%%     \ifnumequal{\value{citecount}}{1}
-%%       {\usebibmacro{prenote}}
-%%       {}%
-%%     \iffieldundef{shorthand}
-%%       {\ifthenelse{\ifciteibid\AND\NOT\iffirstonpage}
-%%          {\usebibmacro{cite:ibid}}
-%%          {\iffieldundef{labelyear}
-%%             {\usebibmacro{cite:label}}
-%%             {\usebibmacro{cite:labelyear+extrayear}}}}
-%%       {\usebibmacro{cite:shorthand}}}
+\defbibenvironment{withadditionallabel}
+  {\renewbibmacro*{begentry}{%
+     \printtext{%
+       \begingroup
+%       \defcounter{maxnames}{\value{mymaxcitenames}}
+       \iffieldundef{shorthand}
+         {\ifnameundef{labelname}
+            {%
+              \usebibmacro{cite:label}
+%              \addspace
+%              \usebibmacro{cite:labelyear+extrayear}
+            }{%
+              \defcounter{maxnames}{\value{mymaxcitenames}}
+              \printnames{labelname}
+              \setunit{\nameyeardelim}
+              \usebibmacro{cite:labelyear+extrayear}
+            }%
+         }{\usebibmacro{cite:shorthand}}%
+       \endgroup
+     }%
+     \addcolon\addspace%oder \quad
+   }%
+   \list
+     {}
+     {\setlength{\leftmargin}{\bibhang}%
+      \setlength{\itemindent}{-\leftmargin}%
+      \setlength{\itemsep}{\bibitemsep}%
+      \setlength{\parsep}{\bibparsep}}}
+  {\endlist}
+  {\item}
 
-%    \printnames{labelname}%
-%    \setunit{\nameyeardelim}%
-%  \printtext[bibhyperref]{\printfield{shorthand}}%shorttitle}}%
-%  %\usebibmacro{cite:labelyear+extrayear}%
 
 
 % Vorname vor Nachname
