@@ -3,7 +3,7 @@
 % http://www.khist.uzh.ch/studium/master/LeitfadenschriftlicheArbeiten.pdf
 
 \ProvidesFile{biblatex-khist-uzh.bbx}[2015/10/26 v0.1 UZH KHIST bibliography style]
-\RequireBibliographyStyle{authoryear-ibid}
+\RequireBibliographyStyle{authortitle-ibid}%authoryear-ibid}
 
 \ExecuteBibliographyOptions{
  dashed=false,
@@ -12,7 +12,10 @@
  isbn=false,
  pagetracker,
  sorting=nyt,
- mergedate=basic,%will always omit the date specification if the date is a bare year number, see https://tex.stackexchange.com/questions/173020/printing-full-date-in-bibliography-biblatex
+ alldates=terse,%year, short, long, terse, comp, iso8601
+ datezeros=true,%
+ datelabel=terse,%year, short, long, terse, comp, iso8601
+ %mergedate=basic,%will always omit the date specification if the date is a bare year number, see https://tex.stackexchange.com/questions/173020/printing-full-date-in-bibliography-biblatex
  %url=false
 }
 
@@ -47,6 +50,24 @@
 \DeclareFieldFormat[article]{citetitle}{#1} %Titel in Sigel nicht kursiv
 %\DeclareFieldFormat*{title}{#1} %Titel in Literaturverzeichnis nicht kursiv
 %\DeclareFieldFormat*{booktitle}{#1} %Titel in Literaturverzeichnis nicht kursiv
+
+% Fix um zwischen Tag/Monat und Monat/Jahr keine Leerzeichen zu setzen
+% vgl. https://tex.stackexchange.com/questions/268376/how-to-remove-space-between-date-separators-in-biblatex-style-footnote-dw
+\DefineBibliographyExtras{german}{%
+ \protected\def\mkbibdateshort#1#2#3{%
+   \iffieldundef{#3}
+     {}
+     {\mkdatezeros{\thefield{#3}}\adddot
+      \iffieldundef{#2}{}{}}%\thinspace}}%
+   \iffieldundef{#2}
+     {}
+     {\mkdatezeros{\thefield{#2}}%
+      \iffieldundef{#1}
+      {}
+      {\iffieldundef{#3}{/}{\adddot}}}%\thinspace}}}%
+   \iffieldbibstring{#1}{\bibstring{\thefield{#1}}}
+ {\mkdatezeros{\thefield{#1}}}}%
+}%
 
 \DefineBibliographyStrings{german}{%
  urlseen = {aufgerufen am},

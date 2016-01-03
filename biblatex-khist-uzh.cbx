@@ -11,11 +11,25 @@
  ibidtracker=constrict,
  ibidpage=false,
  labeldate=true,
+ alldates=terse,%year, short, long, terse, comp, iso8601
+ datezeros=true,%
+ datelabel=terse,%year, short, long, terse, comp, iso8601
  pagetracker=true,
  uniquename=full,
  uniquelist=true,
  sortcites=true
 }
+
+\AtEveryCitekey{%
+  \clearfield{url}%
+  \clearfield{urldate}%
+  \clearfield{urlday}%
+  \clearfield{urlmonth}%
+  \clearfield{urlyear}%
+  \clearfield{urlendday}%
+  \clearfield{urlendmonth}%
+  \clearfield{urlendyear}%
+} % print URLs in bibliography only
 
 % fullcite for entries with the keyword «Quelle» thanks to
 % http://tex.stackexchange.com/a/278355
